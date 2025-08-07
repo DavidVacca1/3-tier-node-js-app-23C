@@ -1,18 +1,41 @@
 name: 3-tiers-node-js-app
 
 on:
+  #trigger/start job when push happens to any of specified branches
   push:
     branches:
       - feature/**
       - staging
 
+# required permissions by GitHub Actions for assuming AWS IAM role
+permissions: 
+    id-token: write
+    contents: read
+env:
+    AWS_REGION: "us-east-1"
+
 jobs:
   build-applicacion:
+    environment: ${{ (github.ref == 'refs/heads/main' && 'production') || (github.ref == 'refs/heads/staigin') && 'staging' || 'dev'}}
     runs-on: ubuntu-latest
     steps:
     - name: checkout branch
       uses: actions/checkout@v3
+
+    # login to aws account 
+    - name: configure aws credentials
+      uses: actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ vars.IAM_ROLE }}
+        role-session-name: GitHubActionsRoleSession
+        aws-region: ${{ env.AWS_REGION}}
+
+
+
+
+
+    # Build docker images  
     - name: Build the docker images
-      run: docker build api/. --tag api-backend:0.1
-
-
+      run: docker build . --tag api-backend:0.1
+      working-directory: ./api
+  
