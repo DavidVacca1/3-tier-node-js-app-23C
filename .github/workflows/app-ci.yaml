@@ -30,8 +30,22 @@ jobs:
         role-session-name: GitHubActionsRoleSession
         aws-region: ${{ env.AWS_REGION}}
 
-    # Build docker images  
-    - name: Build the docker images
-      run: docker build . --tag api-backend:0.1
+
+    # login to ect
+    - id: login-ecr
+      name: login into amazon ecr 
+      uses: aws-actions/amazonecr-loging@v2
+
+    # Build tag and push docker images
+    - name: Build tag and push docker images
+      env:
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        REPOSITORY: api
+        IMAGE_TAG: "0.1" #{{ github.sha}}
       working-directory: ./api
+      run: |
+        docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+    
   
