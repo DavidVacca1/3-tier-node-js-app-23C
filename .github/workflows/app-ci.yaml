@@ -34,7 +34,7 @@ jobs:
     # login to ect
     - id: login-ecr
       name: login into amazon ecr 
-      uses: aws-actions/amazon-ecr-loging@v2
+      uses: aws-actions/amazon-ecr-login@v2
 
     # Build tag and push docker images
     - name: Build tag and push docker images
