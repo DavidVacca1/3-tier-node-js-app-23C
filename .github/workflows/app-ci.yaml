@@ -13,6 +13,6 @@ jobs:
     - name: checkout branch
       uses: actions/checkout@v3
     - name: Build the docker images
-      run: docker build . --tag api-backend:0.1
+      run: docker build api/. --tag api-backend:0.1
 
 
